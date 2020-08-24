@@ -17,11 +17,29 @@ Conan will automatically install mpir on Windows and gmp on non-Windows platform
 
 To force a specific build (32bit or 64bit) add `-DCMAKE_GENERATOR_PLATFORM=x86` or `-DCMAKE_GENERATOR_PLATFORM=x64` to CMake flags. 
 
-### Windows
+### Windows Visual Studio 2019
+
+Static
 ```
-conan install . -if ./build -s compiler.version=16 -s arch=x86_64
-cmake -G "Visual Studio 16 2019" -B./build
+conan install . -if ./build -s compiler.version=16 -s arch=x86_64 -o *:shared=False
+cmake -G "Visual Studio 16 2019" -B./build -DBUILD_SHARED_LIBS=0 -DCMAKE_GENERATOR_PLATFORM=Win32
 ```
+
+Shared
+```
+conan install . -if ./build -s compiler.version=16 -s arch=x86_64 -o *:shared=True
+cmake -G "Visual Studio 16 2019" -B./build -DBUILD_SHARED_LIBS=1 -DCMAKE_GENERATOR_PLATFORM=x64
+```
+
+### Windows Visual Studio 2015
+
+Shared
+```
+conan install . -if ./build -s compiler.version=14 -s arch=x86_64 -o *:shared=True
+cmake -G "Visual Studio 14 2015" -B./build -DBUILD_SHARED_LIBS=1 -DCMAKE_GENERATOR_PLATFORM=x64
+```
+
+
 Open `.sln` in `build` directory and build from Visual Studio.
 
 ### Linux
