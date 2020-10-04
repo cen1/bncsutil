@@ -20,6 +20,8 @@ add_library(${PROJECT_NAME} ${SOURCE} ${HEADERS})
 
 if (WIN32)
     set(USE_GMP 0)
+else()
+    set(USE_GMP 1)
 endif()
 
 if (CMAKE_GENERATOR_PLATFORM EQUAL "x86")
