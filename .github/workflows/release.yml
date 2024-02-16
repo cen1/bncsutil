@@ -2,9 +2,6 @@ name: Release
 
 on:
   push:
-    branches:
-      - main
-      - feature/refresh
     tags:
       - '*'
 
@@ -33,14 +30,14 @@ jobs:
       id: package
       working-directory: build
       run: |
-        cpack -G "DEB" -P libbncsutil-${{ github.ref }}.deb
+        cpack -G "DEB" -P libbncsutil.deb
 
     - uses: actions/upload-artifact@v4
       with:
         retention-days: 1
         overwrite: true
-        name: libbncsutil-${{ github.ref }}.deb
-        path: build/libbncsutil-${{ github.ref }}.deb
+        name: libbncsutil.deb
+        path: build/libbncsutil.deb
 
   rpm:
     runs-on: ubuntu-latest
