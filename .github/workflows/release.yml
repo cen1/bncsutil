@@ -10,8 +10,6 @@ on:
 
 env:
   BUILD_TYPE: Release
-  DEB_NAME: libbncsutil-${{ github.ref }}.deb
-  RPM_NAME: libbncsutil-${{ github.ref }}.rpm
 
 jobs:
   deb:
@@ -39,9 +37,8 @@ jobs:
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
-      working-directory: build
       with:
-        files: libbncsutil-${{ github.ref }}.deb
+        files: build/libbncsutil-${{ github.ref }}.deb
         tag_name: ${{ github.ref }}
         title: Release ${{ github.ref }}
       env:
