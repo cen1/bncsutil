@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - feature/refresh
     tags:
       - '*'
 
@@ -17,7 +18,7 @@ jobs:
       image: debian:bookworm
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install dependencies
       run: apt-get -y update && apt-get install -y libgmp-dev build-essential cmake
@@ -30,9 +31,18 @@ jobs:
 
     - name: Package
       working-directory: build
-      run: cpack -G "DEB"
+      run: |
+        cpack_output=$(cpack -G "DEB" 2>&1)
+        deb_path=$(echo "$cpack_output" | grep "CPack: - package:" | awk '{print $4}')
 
-    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: ${{ deb_path }}
+        tag_name: ${{ github.ref }}
+        title: Release ${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   rpm:
     runs-on: ubuntu-latest
@@ -40,7 +50,7 @@ jobs:
       image: fedora:latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Install dependencies
       run: dnf -y install gmp-devel make automake clang cmake
