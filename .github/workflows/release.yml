@@ -30,14 +30,14 @@ jobs:
       id: package
       working-directory: build
       run: |
-        cpack -G "DEB" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }}.deb
+        cpack -G "DEB" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }}.deb && ls -la
 
     - uses: actions/upload-artifact@v4
       with:
         retention-days: 1
         overwrite: true
-        name: libbncsutil.deb
-        path: build/libbncsutil.deb
+        name: libbncsutil-${{ github.ref_name }}.deb
+        path: build/libbncsutil-${{ github.ref_name }}.deb
 
   rpm:
     runs-on: ubuntu-latest
@@ -58,7 +58,7 @@ jobs:
 
     - name: Package
       working-directory: build
-      run: cpack -G "RPM" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }}.rpm
+      run: cpack -G "RPM" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }}.rpm && ls -la
 
     - uses: actions/upload-artifact@v4
       with:
