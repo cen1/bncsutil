@@ -41,10 +41,27 @@ jobs:
       run: conan profile detect
 
     - name: Install deps with conan
-      run: conan install . -of build -s build_type=Release --build=missing
+      run: conan install . -of ${{runner.workspace}}/build -s build_type=Release --build=missing
 
     - name: Cmake
       run: cmake -G "Unix Makefiles" -B${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_SYSTEM_LIBS=0
+
+    - name: Build
+      run: cmake --build ${{runner.workspace}}/build
+
+  build-fedora-system:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Install dependencies
+      run: dnf update && dnf -y install gmp-devel make automake clang cmake
+
+    - name: Cmake
+      run: cmake -G "Unix Makefiles" -B${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
       run: cmake --build ${{runner.workspace}}/build
