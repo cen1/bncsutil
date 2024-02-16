@@ -24,7 +24,7 @@ jobs:
       run: apt-get -y update && apt-get install -y libgmp-dev build-essential cmake
 
     - name: Cmake
-      run: cmake -G "Unix Makefiles" -B./build1 -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake -G "Unix Makefiles" -B./build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
       run: cmake --build ./build
@@ -35,14 +35,12 @@ jobs:
       run: |
         cpack -G "DEB" -P libbncsutil-${{ github.ref }}.deb
 
-    - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+    - uses: actions/upload-artifact@v4
       with:
-        files: build/libbncsutil-${{ github.ref }}.deb
-        tag_name: ${{ github.ref }}
-        title: Release ${{ github.ref }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        retention-days: 1
+        overwrite: true
+        name: libbncsutil-${{ github.ref }}.deb
+        path: build/libbncsutil-${{ github.ref }}.deb
 
   rpm:
     runs-on: ubuntu-latest
@@ -63,4 +61,35 @@ jobs:
 
     - name: Package
       working-directory: build
-      run: cpack -G "RPM"
+      run: cpack -G "RPM" -P libbncsutil-${{ github.ref }}.rpm
+
+    - uses: actions/upload-artifact@v4
+      with:
+        retention-days: 1
+        overwrite: true
+        name: libbncsutil-${{ github.ref }}.rpm
+        path: build/libbncsutil-${{ github.ref }}.rpm
+
+  release:
+    runs-on: ubuntu-latest
+
+    - name: Download deb
+      uses: actions/download-artifact@v4
+      with:
+        name: build/libbncsutil-${{ github.ref }}.deb
+
+    - name: Download rpm
+      uses: actions/download-artifact@v4
+      with:
+        name: libbncsutil-${{ github.ref }}.rpm
+    
+    - name: Create GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          build/libbncsutil-${{ github.ref }}.deb
+          libbncsutil-${{ github.ref }}.rpm
+        tag_name: ${{ github.ref }}
+        title: Release ${{ github.ref }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
