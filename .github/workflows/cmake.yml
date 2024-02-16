@@ -49,7 +49,7 @@ jobs:
 
     - name: Build
       working-directory: ./build
-      run: cmake --build
+      run: cmake --build .
 
   build-fedora-system:
     runs-on: ubuntu-latest
