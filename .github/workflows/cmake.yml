@@ -6,22 +6,35 @@ env:
   BUILD_TYPE: Release
 
 jobs:
-  build-debian-system:
+  build-debian-system-reproducible:
     runs-on: ubuntu-latest
     container:
       image: debian:bookworm
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies
       run: apt-get -y update && apt-get install -y libgmp-dev build-essential cmake
 
-    - name: Cmake
-      run: cmake -G "Unix Makefiles" -B./build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+    - name: Cmake pass 1
+      run: cmake -G "Unix Makefiles" -B./build1 -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
-    - name: Build
-      run: cmake --build ./build
+    - name: Build pass 1
+      run: cmake --build ./build1
+
+    - name: Cmake pass 2
+      run: cmake --build ./build2
+
+    - name: Build pass 2
+      run: cmake --build ./build2
+
+    - name: Check hashes
+      run: |
+        ls -la build1
+        hash1=$(sha256sum build1/libbncsutil.so)
+        hash2=$(sha256sum build2/libbncsutil.so)
+        [ "$hash1" = "$hash2" ] && exit 0 || exit 1
 
   build-debian-conan:
     runs-on: ubuntu-latest
@@ -29,7 +42,7 @@ jobs:
       image: debian:bookworm
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies
       run: apt-get -y update && apt-get install -y python3 python3-pip build-essential cmake
@@ -57,7 +70,7 @@ jobs:
       image: fedora:latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
 
     - name: Install dependencies
       run: dnf -y install gmp-devel make automake clang cmake
