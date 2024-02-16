@@ -10,6 +10,8 @@ on:
 
 env:
   BUILD_TYPE: Release
+  DEB_NAME: libbncsutil-${{ github.ref }}.deb
+  RPM_NAME: libbncsutil-${{ github.ref }}.rpm
 
 jobs:
   deb:
@@ -30,15 +32,16 @@ jobs:
       run: cmake --build ./build
 
     - name: Package
+      id: package
       working-directory: build
       run: |
-        cpack_output=$(cpack -G "DEB" 2>&1)
-        deb_path=$(echo "$cpack_output" | grep "CPack: - package:" | awk '{print $4}')
+        cpack -G "DEB" -P libbncsutil-${{ github.ref }}.deb
 
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
+      working-directory: build
       with:
-        files: ${{ deb_path }}
+        files: libbncsutil-${{ github.ref }}.deb
         tag_name: ${{ github.ref }}
         title: Release ${{ github.ref }}
       env:
