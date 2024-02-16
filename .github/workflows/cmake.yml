@@ -44,7 +44,8 @@ jobs:
       run: conan install . -of ./build -s build_type=Release --build=missing
 
     - name: Cmake
-      run: cmake -G "Unix Makefiles" -B./build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_SYSTEM_LIBS=0
+      working-directory: ./build
+      run: cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -B./build -DCMAKE_BUILD_TYPE=$BUILD_TYPE -DUSE_SYSTEM_LIBS=0
 
     - name: Build
       run: cmake --build ./build
@@ -61,8 +62,7 @@ jobs:
       run: dnf -y install gmp-devel make automake clang cmake
 
     - name: Cmake
-      working-directory: ./build
-      run: ls -la && cmake .. -G "Unix Makefiles" -DCMAKE_TOOLCHAIN_FILE=conan_toolchain.cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+      run: cmake -G "Unix Makefiles" -B./build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
     - name: Build
-      run: cmake --build ${{runner.workspace}}/build
+      run: cmake --build ./build
