@@ -71,6 +71,7 @@ jobs:
         path: build/libbncsutil-${{ github.ref }}.rpm
 
   release:
+    needs: [deb, rpm]
     runs-on: ubuntu-latest
 
     steps:
