@@ -1,0 +1,56 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - '*'
+
+env:
+  BUILD_TYPE: Release
+
+jobs:
+  deb:
+    runs-on: ubuntu-latest
+    container:
+      image: debian:bookworm
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: apt-get -y update && apt-get install -y libgmp-dev build-essential cmake
+
+    - name: Cmake
+      run: cmake -G "Unix Makefiles" -B./build1 -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build
+      run: cmake --build ./build
+
+    - name: Package
+      working-directory: build
+      run: cpack -G "DEB"
+
+    
+
+  rpm:
+    runs-on: ubuntu-latest
+    container:
+      image: fedora:latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install dependencies
+      run: dnf -y install gmp-devel make automake clang cmake
+
+    - name: Cmake
+      run: cmake -G "Unix Makefiles" -B./build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
+
+    - name: Build
+      run: cmake --build ./build
+
+    - name: Package
+      working-directory: build
+      run: cpack -G "RPM"
