@@ -34,6 +34,8 @@ jobs:
         ls -la build1
         hash1=$(sha256sum build1/libbncsutil.so)
         hash2=$(sha256sum build2/libbncsutil.so)
+        echo "Hash 1: $hash1\n"
+        echo "Hash 2: $hash2\n"
         [ "$hash1" = "$hash2" ] && exit 0 || exit 1
 
   build-debian-conan:
