@@ -35,7 +35,7 @@ jobs:
       run: apt-get -y update && apt-get install -y python3 python3-pip build-essential cmake
 
     - name: Install conan
-      run: pip install conan
+      run: pip install conan --break-system-packages
 
     - name: Install deps with conan
       run: conan install . -of build -s build_type=Release --build=missing
