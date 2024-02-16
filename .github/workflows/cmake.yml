@@ -32,8 +32,8 @@ jobs:
     - name: Check hashes
       run: |
         ls -la build1
-        hash1=$(sha256sum build1/libbncsutil.so)
-        hash2=$(sha256sum build2/libbncsutil.so)
+        hash1=$(sha256sum build1/libbncsutil.so | cut -d ' ' -f 1)
+        hash2=$(sha256sum build2/libbncsutil.so | cut -d ' ' -f 1)
         echo "Hash 1: $hash1\n"
         echo "Hash 2: $hash2\n"
         [ "$hash1" = "$hash2" ] && exit 0 || exit 1
