@@ -86,7 +86,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          build/libbncsutil-${{ github.ref_name }}.deb
+          libbncsutil-${{ github.ref_name }}.deb
           libbncsutil-${{ github.ref_name }}.rpm
         tag_name: ${{ github.ref_name }}
         title: Release ${{ github.ref_name }}
