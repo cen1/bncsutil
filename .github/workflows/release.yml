@@ -30,14 +30,14 @@ jobs:
       id: package
       working-directory: build
       run: |
-        cpack -G "DEB" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }} && ls -la
+        cpack -G "DEB" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }}-devel
 
     - uses: actions/upload-artifact@v4
       with:
         retention-days: 1
         overwrite: true
-        name: libbncsutil-${{ github.ref_name }}.deb
-        path: build/libbncsutil-${{ github.ref_name }}.deb
+        name: libbncsutil-${{ github.ref_name }}-devel.deb
+        path: build/libbncsutil-${{ github.ref_name }}-devel.deb
 
   rpm:
     runs-on: ubuntu-latest
@@ -58,14 +58,14 @@ jobs:
 
     - name: Package
       working-directory: build
-      run: cpack -G "RPM" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }} && ls -la
+      run: cpack -G "RPM" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-${{ github.ref_name }}-devel
 
     - uses: actions/upload-artifact@v4
       with:
         retention-days: 1
         overwrite: true
-        name: libbncsutil-${{ github.ref_name }}.rpm
-        path: build/libbncsutil-${{ github.ref_name }}.rpm
+        name: libbncsutil-${{ github.ref_name }}-devel.rpm
+        path: build/libbncsutil-${{ github.ref_name }}-devel.rpm
 
   release:
     needs: [deb, rpm]
@@ -75,20 +75,19 @@ jobs:
     - name: Download deb
       uses: actions/download-artifact@v4
       with:
-        name: libbncsutil-${{ github.ref_name }}.deb
+        name: libbncsutil-${{ github.ref_name }}-devel.deb
 
     - name: Download rpm
       uses: actions/download-artifact@v4
       with:
-        name: libbncsutil-${{ github.ref_name }}.rpm
+        name: libbncsutil-${{ github.ref_name }}-devel.rpm
     
     - name: Create GitHub Release
       uses: softprops/action-gh-release@v1
       with:
         files: |
-          libbncsutil-${{ github.ref_name }}.deb
-          libbncsutil-${{ github.ref_name }}.rpm
+          libbncsutil-${{ github.ref_name }}-devel.deb
+          libbncsutil-${{ github.ref_name }}-devel.rpm
         tag_name: ${{ github.ref_name }}
-        title: Release ${{ github.ref_name }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

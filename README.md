@@ -58,3 +58,7 @@ cd build && make && make install
 ## Building .deb and .rpm packages
 After invoking CMake, cd to build folder and generate them with `cpack -G "DEB"` and `cpack -G "RPM"`.
 You can then use `gdebi` to do a local install of .deb with automatic dependency resolution or `yum localinstall` on rpm distros. For dnf it's `dnf install <name>.rpm`.
+
+Note that this is a "devel" package which also includes header files.
+
+Library installs go to `/usr/lib`, include files in `/usr/include/bncsutil`. 
