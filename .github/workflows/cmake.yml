@@ -20,6 +20,5 @@ jobs:
     - name: Cmake
       run: cmake -G "Unix Makefiles" -B${{runner.workspace}}/build -DCMAKE_BUILD_TYPE=$BUILD_TYPE
 
-    - name: make
-      working-directory: ${{runner.workspace}}/build
-      run: make
+    - name: Build
+      run: cmake --build ${{runner.workspace}}/build
