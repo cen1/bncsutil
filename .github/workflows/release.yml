@@ -30,7 +30,7 @@ jobs:
       id: package
       working-directory: build
       run: |
-        cpack -G "DEB" -P libbncsutil.deb
+        cpack -G "DEB" -P libbncsutil-${{ github.ref_name }}.deb && ls -la
 
     - uses: actions/upload-artifact@v4
       with:
@@ -58,7 +58,7 @@ jobs:
 
     - name: Package
       working-directory: build
-      run: cpack -G "RPM" -P libbncsutil-${{ github.ref_name }}.rpm
+      run: cpack -G "RPM" -P libbncsutil-${{ github.ref_name }}.rpm && ls -la
 
     - uses: actions/upload-artifact@v4
       with:
