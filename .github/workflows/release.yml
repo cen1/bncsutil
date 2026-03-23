@@ -13,10 +13,10 @@ jobs:
     if: true
     runs-on: ubuntu-latest
     container:
-      image: debian:bookworm
+      image: debian:trixie
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
     - name: Install dependencies
       run: apt-get -y update && apt-get install -y libgmp-dev build-essential cmake
@@ -33,7 +33,7 @@ jobs:
       run: |
         cpack -G "DEB" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-dev_${{ github.ref_name }}_amd64
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
       with:
         retention-days: 1
         overwrite: true
@@ -47,7 +47,7 @@ jobs:
       image: fedora:latest
 
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
     - name: Install dependencies
       run: dnf -y install gmp-devel make automake clang cmake rpm-build
@@ -62,7 +62,7 @@ jobs:
       working-directory: build
       run: cpack -G "RPM" -D CPACK_PACKAGE_FILE_NAME=libbncsutil-devel-${{ github.ref_name }}.x86_64
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
       with:
         retention-days: 1
         overwrite: true
@@ -74,14 +74,14 @@ jobs:
     runs-on: windows-latest
    
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-    - uses: TheMrMilchmann/setup-msvc-dev@v3
+    - uses: TheMrMilchmann/setup-msvc-dev@79dac248aac9d0059f86eae9d8b5bfab4e95e97c # v4
       with:
         arch: x64
 
     - name: Cache Conan
-      uses: actions/cache@v3
+      uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
       with:
         key: conan-windows-amd64-${{ hashFiles('conanfile.py') }}
         path: |
@@ -89,7 +89,7 @@ jobs:
 
     - name: Install Conan
       id: conan
-      uses: turtlebrowser/get-conan@main
+      uses: turtlebrowser/get-conan@c171f295f3f507360ee018736a6608731aa2109d # v1.2
 
     - name: Init conan
       run: conan profile detect
@@ -111,7 +111,7 @@ jobs:
         Compress-Archive -Path Release/* -DestinationPath bncsutil_${{ github.ref_name }}_amd64_dll.zip
         Compress-Archive -Path include -DestinationPath "bncsutil_${{ github.ref_name }}_amd64_dll.zip" -Update
 
-    - uses: actions/upload-artifact@v4
+    - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
       with:
         retention-days: 1
         overwrite: true
@@ -123,18 +123,18 @@ jobs:
     runs-on: windows-latest
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6
 
-      - uses: TheMrMilchmann/setup-msvc-dev@v3
+      - uses: TheMrMilchmann/setup-msvc-dev@79dac248aac9d0059f86eae9d8b5bfab4e95e97c # v4
         with:
           arch: x86
 
       - name: Install Conan
         id: conan
-        uses: turtlebrowser/get-conan@main
+        uses: turtlebrowser/get-conan@c171f295f3f507360ee018736a6608731aa2109d # v1.2
 
       - name: Cache Conan
-        uses: actions/cache@v3
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5
         with:
           key: conan-windows-x86-${{ hashFiles('conanfile.py') }}
           path: |
@@ -160,7 +160,7 @@ jobs:
           Compress-Archive -Path Release/* -DestinationPath bncsutil_${{ github.ref_name }}_x86_dll.zip
           Compress-Archive -Path include -DestinationPath "bncsutil_${{ github.ref_name }}_x86_dll.zip" -Update
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7
         with:
           retention-days: 1
           overwrite: true
@@ -174,27 +174,27 @@ jobs:
 
     steps:
     - name: Download deb
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
       with:
         name: libbncsutil-dev_${{ github.ref_name }}_amd64.deb
 
     - name: Download rpm
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
       with:
         name: libbncsutil-devel-${{ github.ref_name }}.x86_64.rpm
 
     - name: Download dll amd64
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
       with:
         name: bncsutil_${{ github.ref_name }}_amd64_dll.zip
 
     - name: Download dll x86
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@3e5f45b2cfb9172054b4087a40e8e0b5a5461e7c # v8
       with:
         name: bncsutil_${{ github.ref_name }}_x86_dll.zip
     
     - name: Create GitHub Release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@153bb8e04406b158c6c84fc1615b65b24149a1fe # v2
       with:
         files: |
           libbncsutil-dev_${{ github.ref_name }}_amd64.deb
