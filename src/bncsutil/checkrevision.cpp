@@ -219,7 +219,7 @@ MEXP(int) checkRevision(const char* formula, const char* files[], int numFiles,
     values[0] ^= checkrevision_seeds[mpqNumber];
 
     for (int i = 0; i < numFiles; i++) {
-        size_t file_len, remainder, rounded_size, buffer_size;
+        size_t file_len, remainder, buffer_size;
 
         f = file_open(files[i], FILE_READ);
         if (!f) {
