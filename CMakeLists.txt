@@ -20,7 +20,6 @@ set(HEADERS
     "src/bncsutil/file.h"
     "src/bncsutil/keytables.h"
     "src/bncsutil/libinfo.h"
-    "src/bncsutil/ms_stdint.h"
     "src/bncsutil/mutil.h"
     "src/bncsutil/mutil_types.h"
     "src/bncsutil/nls.h"
