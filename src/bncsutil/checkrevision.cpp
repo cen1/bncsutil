@@ -291,6 +291,7 @@ MEXP(int) checkRevision(const char* formula, const char* files[], int numFiles,
                         break;
                     case '/':
                         // well, you never know
+                        if (values[ovs2[k]] == 0) return 0;
                         values[ovd[k]] = values[ovs1[k]] / values[ovs2[k]];
                         break;
                     default:

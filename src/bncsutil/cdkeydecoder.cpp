@@ -140,7 +140,8 @@ CDKeyDecoder::CDKeyDecoder(const char* cdKey, size_t keyLength) {
     cdkey = new char[keyLength + 1];
     initialized = 1;
     keyLen = keyLength;
-    strcpy(cdkey, cdKey);
+    memcpy(cdkey, cdKey, keyLength);
+    cdkey[keyLength] = '\0';
 
     switch (keyType) {
         case KEY_STARCRAFT:
