@@ -230,7 +230,6 @@ MEXP(int) checkRevision(const char* formula, const char* files[], int numFiles,
 
         file_len = file_size(f);
         remainder = file_len % 1024;
-        rounded_size = file_len - remainder;
 
         file_buffer = (uint8_t*) file_map(f, file_len, 0);
         if (!file_buffer) {

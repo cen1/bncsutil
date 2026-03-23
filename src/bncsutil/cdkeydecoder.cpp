@@ -545,7 +545,7 @@ void CDKeyDecoder::decodeKeyTable(int* keyTable) {
             ebp = (keyTable[0x3 - (j >> 3)]);
             ebp &= (0xF << ecx);
             ebp = ebp >> ecx;
-            varC = w3TranslateMap[ebp ^ w3TranslateMap[varC + i] + i];
+            varC = w3TranslateMap[ebp ^ (w3TranslateMap[varC + i] + i)];
             j--;
         }
 
