@@ -219,7 +219,7 @@ MEXP(int) checkRevision(const char* formula, const char* files[], int numFiles,
     values[0] ^= checkrevision_seeds[mpqNumber];
 
     for (int i = 0; i < numFiles; i++) {
-        size_t file_len, remainder, rounded_size, buffer_size;
+        size_t file_len, remainder, buffer_size;
 
         f = file_open(files[i], FILE_READ);
         if (!f) {
@@ -230,7 +230,6 @@ MEXP(int) checkRevision(const char* formula, const char* files[], int numFiles,
 
         file_len = file_size(f);
         remainder = file_len % 1024;
-        rounded_size = file_len - remainder;
 
         file_buffer = (uint8_t*) file_map(f, file_len, 0);
         if (!file_buffer) {
@@ -291,6 +290,7 @@ MEXP(int) checkRevision(const char* formula, const char* files[], int numFiles,
                         break;
                     case '/':
                         // well, you never know
+                        if (values[ovs2[k]] == 0) return 0;
                         values[ovd[k]] = values[ovs1[k]] / values[ovs2[k]];
                         break;
                     default:

@@ -140,7 +140,8 @@ CDKeyDecoder::CDKeyDecoder(const char* cdKey, size_t keyLength) {
     cdkey = new char[keyLength + 1];
     initialized = 1;
     keyLen = keyLength;
-    strcpy(cdkey, cdKey);
+    memcpy(cdkey, cdKey, keyLength);
+    cdkey[keyLength] = '\0';
 
     switch (keyType) {
         case KEY_STARCRAFT:
@@ -421,12 +422,12 @@ int CDKeyDecoder::processWarCraft2Key() {
         cdkey[j] = c;
         if (c <= '7') {
             v = v2;
-            c2 = ((char) (v & 0xFF)) & 7 ^ c;
+            c2 = (((char) (v & 0xFF)) & 7) ^ c;
             v >>= 3;
             cdkey[j] = (char) c2;
             v2 = v;
         } else if (c < 'A') {
-            cdkey[j] = ((char) j) & 1 ^ c;
+            cdkey[j] = (((char) j) & 1) ^ c;
         }
     }
 
@@ -526,14 +527,14 @@ void CDKeyDecoder::decodeKeyTable(int* keyTable) {
                 /*
                 ecx = (j & 7) << 2;
                 ebp = (keyTable[0x3 - (j >> 3)] & (0xF << ecx)) >> ecx;
-                varC = w3TranslateMap[ebp ^ w3TranslateMap[varC + i] + i];
+                varC = w3TranslateMap[ebp ^ (w3TranslateMap[varC + i] + i)];
                 */
                 ecx = (j & 7) << 2;
                 //ebp = (keyTable[0x3 - (j >> 3)] & (0xF << ecx)) >> ecx;
                 ebp = (keyTable[0x3 - (j >> 3)]);
                 ebp &= (0xF << ecx);
                 ebp = ebp >> ecx;
-                varC = w3TranslateMap[ebp ^ w3TranslateMap[varC + i] + i];
+                varC = w3TranslateMap[ebp ^ (w3TranslateMap[varC + i] + i)];
             }
         }
 
@@ -544,13 +545,13 @@ void CDKeyDecoder::decodeKeyTable(int* keyTable) {
             ebp = (keyTable[0x3 - (j >> 3)]);
             ebp &= (0xF << ecx);
             ebp = ebp >> ecx;
-            varC = w3TranslateMap[ebp ^ w3TranslateMap[varC + i] + i];
+            varC = w3TranslateMap[ebp ^ (w3TranslateMap[varC + i] + i)];
             j--;
         }
 
         j = 3 - var4;
         ebx = (w3TranslateMap[varC + i] & 0xF) << esi;
-        keyTable[j] = (ebx | ~(0xF << esi) & ((int) keyTable[j]));
+        keyTable[j] = (ebx | (~(0xF << esi) & ((int) keyTable[j])));
     } while ((i -= 16) >= 0);
 
     // pass 2

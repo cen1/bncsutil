@@ -67,7 +67,7 @@ file_t file_open(const char* filename, unsigned int mode)
 
     try {
         data = new _file;
-    } catch (std::bad_alloc) {
+    } catch (const std::bad_alloc&) {
         //bncsutil_debug_message_a("Failed to allocate %u bytes to hold file structure.", sizeof(struct _file));
         CloseHandle(file);
         return (file_t) 0;
@@ -200,7 +200,7 @@ file_t file_open(const char* filename, const unsigned int mode_flags)
 
     try {
         data = new _file;
-    } catch (std::bad_alloc) {
+    } catch (const std::bad_alloc&) {
         //bncsutil_debug_message_a("Failed to allocate %u bytes to hold file structure.", sizeof(struct _file));
         fclose(f);
         return (file_t) 0;
