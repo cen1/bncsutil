@@ -245,7 +245,7 @@ MEXP(void) cm_pe_unload(cm_pe_t pe)
     free(pe);
 }
 
-MEXP(cm_pe_section_t*) cm_pe_get_section(cm_pe_t pe, const char* name) {
+static cm_pe_section_t* cm_pe_get_section(cm_pe_t pe, const char* name) {
     unsigned int i;
     cm_pe_section_t* s;
     uint32_t section_count = pe->header.section_count;

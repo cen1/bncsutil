@@ -42,10 +42,6 @@ extern "C" {
  */
 MEXP(void) calcHashBuf(const char* data, size_t length, char* hash);
 
-/*
- * New implementation.  Broken.  No plans to fix.
- */
-MEXP(void) bsha1_hash(const char* input, unsigned int length, char* result);
 
 #ifdef __cplusplus
 } // extern "C"

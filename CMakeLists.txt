@@ -1,12 +1,8 @@
 cmake_minimum_required(VERSION 3.25)
-SET(VERSION_MAJOR "1")
-SET(VERSION_MINOR "4")
-SET(VERSION_PATCH "3")
 
-project(bncsutil VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
+project(bncsutil VERSION 1.4.5)
 
 set(CMAKE_MODULE_PATH ${CMAKE_BINARY_DIR} "${PROJECT_SOURCE_DIR}/CMake/Modules")
-message(${CMAKE_BINARY_DIR})
 
 add_library(bncsutil SHARED)
 
@@ -17,7 +13,6 @@ set(HEADERS
     "src/bncsutil/cdkeydecoder.h"
     "src/bncsutil/checkrevision.h"
     "src/bncsutil/decodekey.h"
-    "src/bncsutil/file.h"
     "src/bncsutil/keytables.h"
     "src/bncsutil/libinfo.h"
     "src/bncsutil/mutil.h"
@@ -26,7 +21,6 @@ set(HEADERS
     "src/bncsutil/oldauth.h"
     "src/bncsutil/pe.h"
     "src/bncsutil/sha1.h"
-    "src/bncsutil/stack.h"
 )
 
 set(SOURCES
@@ -45,79 +39,79 @@ set(SOURCES
 
 target_sources(bncsutil PRIVATE ${SOURCES} ${HEADERS})
 
-if (WIN32)
+if(WIN32)
     option(USE_SYSTEM_LIBS "Use system libraries" OFF)
 else()
     option(USE_SYSTEM_LIBS "Use system libraries" ON)
 endif()
 
-if (CMAKE_GENERATOR_PLATFORM EQUAL "x86")
-    set_target_properties(bncsutil PROPERTIES COMPILE_FLAGS "-m32" LINK_FLAGS "-m32")
-    MESSAGE(STATUS "Excluding 64bit library paths from search.")
+if(CMAKE_GENERATOR_PLATFORM STREQUAL "x86")
+    target_compile_options(bncsutil PRIVATE -m32)
+    target_link_options(bncsutil PRIVATE -m32)
+    message(STATUS "Excluding 64bit library paths from search.")
     set_property(GLOBAL PROPERTY FIND_LIBRARY_USE_LIB64_PATHS OFF)
-    set(ARCH_DEB i386)
-    set(ARCH_RPM i686)
-elseif (CMAKE_GENERATOR_PLATFORM EQUAL "x64")
-    set_target_properties(bncsutil PROPERTIES COMPILE_FLAGS "-m64" LINK_FLAGS "-m64")
-    set(ARCH_DEB amd64)
-    set(ARCH_RPM x86_64)
-else()
-    set(ARCH_DEB amd64)
-    set(ARCH_RPM x86_64)
+elseif(CMAKE_GENERATOR_PLATFORM STREQUAL "x64")
+    target_compile_options(bncsutil PRIVATE -m64)
+    target_link_options(bncsutil PRIVATE -m64)
 endif()
 
-if (USE_SYSTEM_LIBS)
-    message("Using system dependencies")
+if(USE_SYSTEM_LIBS)
+    message(STATUS "Using system dependencies")
     find_package(GMP REQUIRED)
     target_include_directories(bncsutil PRIVATE src ${GMP_INCLUDE_DIR})
-    target_link_libraries(bncsutil ${GMP_LIBRARIES})
+    target_link_libraries(bncsutil PRIVATE ${GMP_LIBRARIES})
 else()
-    message("Using conan dependencies")
+    message(STATUS "Using conan dependencies")
     find_package(gmp REQUIRED)
-    target_include_directories(bncsutil PRIVATE src gmp::gmp)
+    target_include_directories(bncsutil PRIVATE src)
     target_link_libraries(bncsutil PRIVATE gmp::gmp)
 endif()
 
-set_target_properties(bncsutil PROPERTIES OUTPUT_NAME bncsutil)
+target_compile_definitions(bncsutil PRIVATE MUTIL_LIB_BUILD)
 
 if(UNIX)
-    set_target_properties(bncsutil PROPERTIES VERSION "${VERSION_MAJOR}.${VERSION_MINOR}.${VERSION_PATCH}")
-    set_target_properties(bncsutil PROPERTIES SOVERSION 1)
-
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -O3 -Wno-multichar -fPIC")
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -O3 -Wno-multichar -fPIC")
+    set_target_properties(bncsutil PROPERTIES
+        VERSION ${PROJECT_VERSION}
+        SOVERSION ${PROJECT_VERSION_MAJOR}
+    )
+    target_compile_options(bncsutil PRIVATE
+        -Wall -O3 -Wno-multichar -fPIC
+        -fvisibility=hidden
+        $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
+    )
 endif()
 
-if (WIN32)
-	add_definitions(-D_CRT_SECURE_NO_WARNINGS -DMUTIL_LIB_BUILD)
+if(WIN32)
+    target_compile_definitions(bncsutil PRIVATE _CRT_SECURE_NO_WARNINGS)
 endif()
 
-if (MSVC)
-	set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "bncsutil")
+if(MSVC)
+    set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT "bncsutil")
 endif()
 
 include(CMakePackageConfigHelpers)
+include(GNUInstallDirs)
 
 install(TARGETS bncsutil
         EXPORT bncsutilTargets
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        INCLUDES DESTINATION include
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
 )
 
-install(FILES ${HEADERS} DESTINATION include/bncsutil)
+install(FILES ${HEADERS} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/bncsutil)
 
 install(EXPORT bncsutilTargets
         FILE bncsutilTargets.cmake
         NAMESPACE bncsutil::
-        DESTINATION lib/cmake/bncsutil
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bncsutil
 )
 
 configure_package_config_file(
         "${CMAKE_CURRENT_SOURCE_DIR}/CMake/bncsutilConfig.cmake.in"
         "${CMAKE_CURRENT_BINARY_DIR}/bncsutilConfig.cmake"
-        INSTALL_DESTINATION lib/cmake/bncsutil
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bncsutil
 )
 
 write_basic_package_version_file(
@@ -129,37 +123,35 @@ write_basic_package_version_file(
 install(FILES
         "${CMAKE_CURRENT_BINARY_DIR}/bncsutilConfig.cmake"
         "${CMAKE_CURRENT_BINARY_DIR}/bncsutilConfigVersion.cmake"
-        DESTINATION lib/cmake/bncsutil
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/bncsutil
 )
 
-#CPack configuration
-SET(CPACK_GENERATOR "DEB" "RPM")
-SET(CPACK_PACKAGE_NAME "bncsutil")
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Battle.Net Chat Service Utility")
-SET(CPACK_PACKAGE_VENDOR "bncsutil")
-SET(CPACK_PACKAGE_DESCRIPTION "\
+# CPack configuration
+set(CPACK_GENERATOR "DEB" "RPM")
+set(CPACK_PACKAGE_NAME "bncsutil")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Battle.Net Chat Service Utility")
+set(CPACK_PACKAGE_VENDOR "bncsutil")
+set(CPACK_PACKAGE_DESCRIPTION "\
 This will install the library to /usr/local/lib and header files to /usr/local/include.\n \
 Make sure these directories are in your library and include paths. \
 ")
-SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
-SET(CPACK_PACKAGE_VERSION_MAJOR "${VERSION_MAJOR}")
-SET(CPACK_PACKAGE_VERSION_MINOR "${VERSION_MINOR}")
-SET(CPACK_PACKAGE_VERSION_PATCH "${VERSION_PATCH}")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/COPYING")
+set(CPACK_PACKAGE_VERSION_MAJOR ${PROJECT_VERSION_MAJOR})
+set(CPACK_PACKAGE_VERSION_MINOR ${PROJECT_VERSION_MINOR})
+set(CPACK_PACKAGE_VERSION_PATCH ${PROJECT_VERSION_PATCH})
 set(CPACK_PACKAGING_INSTALL_PREFIX "/usr/local")
 
-#DEB configuration
-SET(CPACK_DEBIAN_PACKAGE_SECTION "libs")
-SET(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/BNETDocs/bncsutil")
-SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "imbacen@gmail.com")
-SET(CPACK_DEBIAN_PACKAGE_ARCHITECTURE ${ARCH_DEB})
-SET(CPACK_DEBIAN_PACKAGE_DEPENDS "libgmp10")
+# DEB configuration
+set(CPACK_DEBIAN_PACKAGE_SECTION "libs")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE "https://github.com/BNETDocs/bncsutil")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "imbacen@gmail.com")
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "libgmp10")
 
-#RPM configuration
-SET(CPACK_RPM_PACKAGE_RELEASE 1)
-SET(CPACK_RPM_PACKAGE_LICENSE "LGPL-2.1")
-SET(CPACK_RPM_PACKAGE_GROUP "bncsutil")
-SET(CPACK_RPM_PACKAGE_URL "https://github.com/BNETDocs/bncsutil")
-SET(CPACK_RPM_PACKAGE_REQUIRES "gmp")
-SET(CPACK_RPM_PACKAGE_ARCHITECTURE ${ARCH_RPM})
+# RPM configuration
+set(CPACK_RPM_PACKAGE_RELEASE 1)
+set(CPACK_RPM_PACKAGE_LICENSE "LGPL-2.1")
+set(CPACK_RPM_PACKAGE_GROUP "bncsutil")
+set(CPACK_RPM_PACKAGE_URL "https://github.com/BNETDocs/bncsutil")
+set(CPACK_RPM_PACKAGE_REQUIRES "gmp")
 
-INCLUDE(CPack)
+include(CPack)

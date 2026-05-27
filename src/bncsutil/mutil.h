@@ -151,9 +151,18 @@
 #endif
 
 /**
- * I think what this tries to do is differentiate if you are trying to build
- * this as a library exporting symbols versus using the library from this same project
- * ..which I don't think makes much sense. TODO: evaluate and nuke import part in the future
+ * MUTIL_LIB_BUILD must be defined when compiling the library itself.
+ * It is set automatically by CMake via target_compile_definitions().
+ *
+ * When defined (building the .so/.dll):
+ *   MEXP marks symbols for export:
+ *     Windows - __declspec(dllexport)
+ *     Linux   - __attribute__((visibility("default"))) (with -fvisibility=hidden)
+ *
+ * When not defined (consumer including the header):
+ *   MEXP marks symbols for import:
+ *     Windows - __declspec(dllimport)
+ *     Linux   - extern (no-op; ELF resolves symbols at load time)
  */
 #ifdef MOS_WINDOWS
 #  pragma comment(lib, "Version.lib")
@@ -166,8 +175,8 @@
 #  endif
 #else
 #  ifdef MUTIL_LIB_BUILD
-#    define MEXP(type) type
-#    define MCEXP(name) class name
+#    define MEXP(type) __attribute__((visibility("default"))) type
+#    define MCEXP(name) class __attribute__((visibility("default"))) name
 #  else
 #    define MEXP(type) extern type
 #    define MCEXP(name) class name
