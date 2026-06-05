@@ -44,3 +44,4 @@ CMakeUserPresets.json
 cmake-*
 .idea/
 obj-x86_64-linux-gnu/
+.claude/
