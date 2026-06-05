@@ -79,6 +79,9 @@ if(UNIX)
         -fvisibility=hidden
         $<$<COMPILE_LANGUAGE:CXX>:-fvisibility-inlines-hidden>
     )
+    target_link_options(bncsutil PRIVATE
+        -Wl,--version-script=${CMAKE_CURRENT_SOURCE_DIR}/bncsutil.map
+    )
 endif()
 
 if(WIN32)

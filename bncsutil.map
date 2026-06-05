@@ -1,0 +1,68 @@
+{
+    global:
+        /* bsha1 */
+        calcHashBuf;
+
+        /* checkrevision */
+        checkRevision;
+        checkRevisionFlat;
+        extractMPQNumber;
+        getExeInfo;
+        get_mpq_seed;
+        set_mpq_seed;
+
+        /* decodekey (C wrappers) */
+        kd_calculateHash;
+        kd_create;
+        kd_free;
+        kd_getHash;
+        kd_init;
+        kd_isValid;
+        kd_longVal2;
+        kd_product;
+        kd_quick;
+        kd_val1;
+        kd_val2;
+        kd_val2Length;
+
+        /* libinfo */
+        bncsutil_getVersion;
+        bncsutil_getVersionString;
+
+        /* nls */
+        nls_account_change_proof;
+        nls_account_create;
+        nls_account_logon;
+        nls_check_M2;
+        nls_check_signature;
+        nls_free;
+        nls_get_A;
+        nls_get_K;
+        nls_get_M1;
+        nls_get_S;
+        nls_get_v;
+        nls_init;
+        nls_init_l;
+        nls_reinit;
+        nls_reinit_l;
+
+        /* oldauth */
+        doubleHashPassword;
+        hashPassword;
+
+        /* pe */
+        cm_pe_fixed_version;
+        cm_pe_load;
+        cm_pe_load_resources;
+        cm_pe_unload;
+        cm_pe_unload_resources;
+
+        /* CDKeyDecoder C++ class (methods, vtable, typeinfo) */
+        _ZN12CDKeyDecoder*;
+        _ZTI12CDKeyDecoder;
+        _ZTS12CDKeyDecoder;
+        _ZTV12CDKeyDecoder;
+
+    local:
+        *;
+};
